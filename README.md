@@ -13,6 +13,16 @@ Design overview:
 Used the concept as explained here:
 https://www.cs.uml.edu/~jsmith/OSReport/frames.html
 
+The previous implementation has been extended to add arenas.
+As a when a new thread comes in, a new arena for allocation/deallocation is created using mmap().
+There will be a total of `sysconf(_SC_NPROCESSORS_ONLN)` arenas.
+Any more threads will be assigned to thread_count % `sysconf(_SC_NPROCESSORS_ONLN)`.
+
+The array of freeList holding free blocks now holds an additional linked list of free blocks that are of size greater than 4096.
+
+---------------------------------------
+
+
 In my implementation, I am maintaining an array called freeList, which
 is an array of doubly LinkedLists connected by nodes.
 Each Node of the LinkedList signifies a block of memory and the next and

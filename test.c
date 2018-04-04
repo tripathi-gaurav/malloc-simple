@@ -2,6 +2,8 @@
 #include <unistd.h>
 
 main(){
+
 long a = sysconf(_SC_PAGESIZE);
-printf("%ld", a);
+long b = sysconf(_SC_NPROCESSORS_ONLN);
+printf("PAGE_SIZE=%ld\nNUMBER OF CORES=%ld\n", a, b);
 }
