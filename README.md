@@ -19,6 +19,7 @@ There will be a total of `sysconf(_SC_NPROCESSORS_ONLN)` arenas.
 Any more threads will be assigned to thread_count % `sysconf(_SC_NPROCESSORS_ONLN)`.
 
 The array of freeList holding free blocks now holds an additional linked list of free blocks that are of size greater than 4096.
+Total number of mmap's done is equal to `sysconf(_SC_NPROCESSORS_ONLN)`
 
 ---------------------------------------
 

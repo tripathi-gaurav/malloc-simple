@@ -43,6 +43,12 @@ void free(void *ptr){
   write(STDOUT_FILENO, buf, strlen(buf) + 1);
   */
 
+  if ( nodeToFree > arenaAssignedToThread->endAddress || nodeToFree < arenaAssignedToThread->startAddress ){
+    //HACK to fix dangling pointer issue
+    nodeToFree = NULL;
+    return ;
+  }
+
   if( nodeToFree->isAllocated != 1 ){
     //pthread_mutex_unlock(&mutex);
     /*
@@ -151,6 +157,10 @@ void free(void *ptr){
   }
   //place the coalesced block at the correct location
   int indexInFreeList = LOG(nodeToFree->size) - 1;
+  if( indexInFreeList >= 12 ){
+    //because all such blocks will be placed on the 12th index (i.e. 13th poistion)
+    indexInFreeList = 12;
+  }
   if( arena->freeList[indexInFreeList] != NULL ){
     MallocNode *curr = arena->freeList[indexInFreeList];
     while( curr->next != NULL ){
@@ -185,8 +195,14 @@ MallocNode* findBuddy(MallocNode* nodeToFree){
   */
 
   MallocNode *curr = arena->freeList[freeListIndex];
+  if ( curr > arenaAssignedToThread->endAddress || curr < arenaAssignedToThread->startAddress ){
+    //HACK to fix dangling pointer issue
+    curr = NULL;
+    return NULL;
+  }
 
   while( curr != NULL ){
+
     /*
     sprintf(buf, "Curr->isAllocated:%d and curr->blockMaxAddr: %p\n and index to look at is: %d\n",
      curr->isAllocated, curr->blockMaxAddr, freeListIndex );
